@@ -1,0 +1,31 @@
+{
+  "next": [
+    {
+      "run_when_any" : [
+        "release"
+      ],
+      "build" : "publish",
+      "build_in" : "build_proxy",
+      "copy" : [
+        {"../../../inc/proxy.py" : "build_proxy/proxy.py"}
+      ],
+      "config" : {
+        "name" : "proxy",
+        "type" : "build",
+        "clear_build_path" : false,
+        "visibility" : "public"
+      }
+    },
+    {
+      "run_when_any" : [
+        "schedule"
+      ],
+      "build" : "proxy",
+      "build_in" : "./",
+      "config" : {
+        "clear_build_path" : false,
+        "proxy" : "../../config/schedule.json"
+      }
+    }
+  ]
+}
