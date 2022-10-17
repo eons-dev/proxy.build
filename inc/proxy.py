@@ -26,13 +26,15 @@ class proxy(Builder):
         # events.add("proxied")
         # eventStr = ""
         # for e in events:
-        #     eventStr += f" --event {e}"
+        #    eventStr += f" --event {e}"
 
         for arg, mem in this.configNameOverrides.items():
             if (arg not in this.add_args):
                 this.add_args[arg] = getattr(this, mem)
+        this.add_args['precursor'] = this
 
         this.proxy = str(Path(this.rootPath).joinpath(this.proxy).resolve())
+        this.Copy(this.proxy, str(Path(this.buildPath).joinpath('build.json').resolve()))
 
         origConfig = this.executor.config
         origConfigArg = this.executor.parsedArgs.config
@@ -42,15 +44,14 @@ class proxy(Builder):
         this.executor.config = origConfig
         this.executor.parsedArgs.config = origConfigArg
 
-        # This is a slower / less optimized version of the above.
-        #         this.RunCommand(f'''ebbs         \
-        # {' -q' * this.executor.parsedArgs.quiet}       \
+        #        this.RunCommand(f'''ebbs        \
+        # {' -q' * this.executor.parsedArgs.quiet}     \
         # {' -v' * this.executor.parsedArgs.verbose}     \
-        # -c {this.proxy}                          \
-        # --name {this.projectName}                \
-        # --type {this.projectType}                \
+        # -c {this.proxy}                         \
+        # --name {this.projectName}             \
+        # --type {this.projectType}             \
         # --clear_build_path {this.clearBuildPath} \
-        # --build_in {this.buildPath}              \
+        # --build_in {this.buildPath}             \
         # {eventStr}                               \
-        # {' '.join(this.add_args)}                \
+        # {' '.join(this.add_args)}             \
         # ''')
