@@ -34,7 +34,10 @@ class proxy(Builder):
         this.add_args['precursor'] = this
 
         this.proxy = str(Path(this.rootPath).joinpath(this.proxy).resolve())
-        this.Copy(this.proxy, str(Path(this.buildPath).joinpath('build.json').resolve()))
+
+        # Copying the proxy file is unnecessary atm.
+        # this.proxyFile = this.proxy.split('/')[-1]
+        # this.Copy(this.proxy, str(Path(this.buildPath).joinpath(this.proxyFile).resolve()))
 
         origConfig = this.executor.config
         origConfigArg = this.executor.parsedArgs.config
