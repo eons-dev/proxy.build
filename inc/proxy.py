@@ -35,7 +35,6 @@ class proxy(Builder):
 
         this.proxy = str(Path(this.rootPath).joinpath(this.proxy).resolve())
 
-        # Copying the proxy file is unnecessary atm.
         this.proxyFile = "build."+this.proxy.split('/')[-1].split('.')[-1]
         this.Copy(this.proxy, str(Path(this.buildPath).joinpath(this.proxyFile).resolve()))
 
