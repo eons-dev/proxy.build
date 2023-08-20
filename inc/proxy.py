@@ -1,5 +1,6 @@
 import os
 import logging
+import eons
 from pathlib import Path
 from ebbs import Builder
 
@@ -38,13 +39,35 @@ class proxy(Builder):
         this.proxyFile = "build."+this.proxy.split('/')[-1].split('.')[-1]
         this.Copy(this.proxy, str(Path(this.buildPath).joinpath(this.proxyFile).resolve()))
 
-        origConfig = this.executor.config
-        origConfigArg = this.executor.parsedArgs.config
+        orig = eons.util.DotDict()
+        orig.args = this.executor.extraArgs
+        orig.config = this.executor.config
+        orig.configArg = this.executor.parsedArgs.config
+        orig.builder = this.executor.parsedArgs.builder
+        orig.path = this.executor.rootPath
+        orig.buildIn = this.executor.default.build.directory
+        orig.events = this.executor.events
+        orig.next = this.executor.next
+
         this.executor.parsedArgs.config = this.proxy
+        this.executor.parsedArgs.builder = None
         this.executor.PopulateConfig()
-        this.executor.Build(None, ".", this.buildPath, this.events, **this.add_args)
-        this.executor.config = origConfig
-        this.executor.parsedArgs.config = origConfigArg
+        this.executor.rootPath = "."
+        this.executor.default.build.directory = this.buildPath
+        this.executor.events = this.events
+        this.executor.next = []
+        this.executor.extraArgs = this.add_args
+        # this.executor.Build(None, ".", this.buildPath, this.events, **this.add_args)
+        this.executor()
+        
+        this.executor.extraArgs = orig.args
+        this.executor.config = orig.config
+        this.executor.parsedArgs.config = orig.configArg
+        this.executor.parsedArgs.builder = orig.builder
+        this.executor.rootPath = orig.path
+        this.executor.default.build.directory = orig.buildIn
+        this.executor.events = orig.events
+        this.executor.next = orig.next
 
         #        this.RunCommand(f'''ebbs        \
         # {' -q' * this.executor.parsedArgs.quiet}     \
