@@ -44,15 +44,17 @@ class proxy(Builder):
         orig.config = this.executor.config
         orig.configArg = this.executor.parsedArgs.config
         orig.builder = this.executor.parsedArgs.builder
-        orig.path = this.executor.rootPath
         orig.buildIn = this.executor.default.build.directory
         orig.events = this.executor.events
         orig.next = this.executor.next
+        orig.path = None
+        if (hasattr(this.executor, "path")):
+            orig.path = this.executor.path
 
         this.executor.parsedArgs.config = this.proxy
         this.executor.parsedArgs.builder = None
         this.executor.PopulateConfig()
-        this.executor.rootPath = "."
+        this.executor.path = this.executor.rootPath
         this.executor.default.build.directory = this.buildPath
         this.executor.events = this.events
         this.executor.next = []
@@ -64,10 +66,11 @@ class proxy(Builder):
         this.executor.config = orig.config
         this.executor.parsedArgs.config = orig.configArg
         this.executor.parsedArgs.builder = orig.builder
-        this.executor.rootPath = orig.path
         this.executor.default.build.directory = orig.buildIn
         this.executor.events = orig.events
         this.executor.next = orig.next
+        if (orig.path):
+            this.executor.path = orig.path
 
         #        this.RunCommand(f'''ebbs        \
         # {' -q' * this.executor.parsedArgs.quiet}     \
